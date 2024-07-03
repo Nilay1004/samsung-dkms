@@ -116,8 +116,8 @@ after_initialize do
     private
 
     def set_placeholder_email
-      self.test_email = self.email
-      self.email = 'abcde'
+      self.test_email = PIIEncryption.encrypt_email(self.email)
+      self.email = PIIEncryption.hash_email(self.email)
     end
 
     def set_test_email
@@ -127,17 +127,17 @@ after_initialize do
     # Override methods that search by email
     def self.find_by_email(email)
       Rails.logger.info "Searching UserEmail by test_email: #{email}"
-      find_by(test_email: email)
+      find_by(test_email: PIIEncryption.hash_email(email))
     end
 
     def self.find_by_email!(email)
       Rails.logger.info "Searching UserEmail by test_email!: #{email}"
-      find_by!(test_email: email)
+      find_by!(test_email: PIIEncryption.hash_email(email))
     end
 
     def self.exists_with_email?(email)
       Rails.logger.info "Checking existence of UserEmail by test_email: #{email}"
-      exists?(test_email: email)
+      exists?(test_email: PIIEncryption.hash_email(email))
     end
 
     def set_temporary_email_for_validation
@@ -161,12 +161,12 @@ after_initialize do
   module EmailOverride
     def find_user_by_email(email)
       Rails.logger.info "Searching User by test_email: #{email}"
-      UserEmail.find_by(test_email: email)&.user
+      UserEmail.find_by(test_email: PIIEncryption.hash_email(email))&.user
     end
 
     def find_user_by_email!(email)
       Rails.logger.info "Searching User by test_email!: #{email}"
-      UserEmail.find_by!(test_email: email)&.user
+      UserEmail.find_by!(test_email: PIIEncryption.hash_email(email))&.user
     end
   end
 
