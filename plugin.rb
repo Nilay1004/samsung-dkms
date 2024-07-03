@@ -18,8 +18,6 @@ unless defined?(::MyPluginModule)
 end
 
 require_relative "lib/my_plugin_module/engine"
-
-
 require 'net/http'
 require 'uri'
 require 'json'
@@ -29,14 +27,12 @@ after_initialize do
   require_dependency 'user_email'
   require_dependency 'auth/default_current_user_provider'
 
-
   module ::PIIEncryption
     def self.encrypt_email(email)
       return email if email.nil? || email.empty?
 
       uri = URI.parse("http://35.174.88.137:8080/encrypt")
       http = Net::HTTP.new(uri.host, uri.port)
-
       request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       request.body = { data: email, pii_type: "email" }.to_json
       Rails.logger.info "PIIEncryption: Sending encryption request for email: #{email}"
@@ -55,7 +51,6 @@ after_initialize do
 
       uri = URI.parse("http://35.174.88.137:8080/hash")
       http = Net::HTTP.new(uri.host, uri.port)
-
       request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       request.body = { data: email, pii_type: "email" }.to_json
       Rails.logger.info "PIIEncryption: Sending hash request for email: #{email}"
@@ -74,7 +69,6 @@ after_initialize do
 
       uri = URI.parse("http://35.174.88.137:8080/decrypt")
       http = Net::HTTP.new(uri.host, uri.port)
-
       request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
       request.body = { data: encrypted_email }.to_json
       Rails.logger.info "PIIEncryption: Sending decryption request for encrypted email: #{encrypted_email}"
@@ -92,7 +86,6 @@ after_initialize do
   class ::UserEmail
     before_validation :set_temporary_email_for_validation, if: :email_changed?
     after_validation :restore_encrypted_email, if: :email_changed?
-
     before_save :encrypt_email_address, if: :email_changed?
 
     def email
@@ -128,8 +121,23 @@ after_initialize do
       write_attribute(:email, encrypted_email)
       write_attribute(:test_email, email_hash)
     end
-  end
 
+    # Override methods that search by email
+    def self.find_by_email(email)
+      Rails.logger.info "Searching UserEmail by test_email: #{email}"
+      find_by(test_email: email)
+    end
+
+    def self.find_by_email!(email)
+      Rails.logger.info "Searching UserEmail by test_email!: #{email}"
+      find_by!(test_email: email)
+    end
+
+    def self.exists_with_email?(email)
+      Rails.logger.info "Checking existence of UserEmail by test_email: #{email}"
+      exists?(test_email: email)
+    end
+  end
 
   # Override UserEmail uniqueness validation to use hashed email
   class ::EmailValidator
@@ -166,19 +174,18 @@ after_initialize do
     end
   end
 
-
   # Ensure OIDC Plugin Compatibility
   if defined?(Auth::OidcAuthenticator)
     class ::Auth::OidcAuthenticator
       alias_method :original_after_authenticate, :after_authenticate
-  
+
       def after_authenticate(auth_token)
         result = original_after_authenticate(auth_token)
-  
+
         if result.email.present?
           email_hash = PIIEncryption.hash_email(result.email)
           Rails.logger.info "PIIEncryption: Checking hashed email for OIDC authentication: #{email_hash}"
-          
+
           user_email_record = UserEmail.find_by(test_email: email_hash)
 
           if user_email_record
@@ -192,12 +199,31 @@ after_initialize do
             result.extra_data[:test_email] = email_hash
           end
         end
-        
+
         result
       rescue StandardError => e
         Rails.logger.error "Error during OIDC authentication: #{e.message}"
         raise e
       end
     end
+  end
+
+  # Ensure other parts of the application use test_email for searches
+  module EmailOverride
+    def find_user_by_email(email)
+      Rails.logger.info "Searching User by test_email: #{email}"
+      UserEmail.find_by(test_email: email)&.user
+    end
+
+    def find_user_by_email!(email)
+      Rails.logger.info "Searching User by test_email!: #{email}"
+      UserEmail.find_by!(test_email: email)&.user
+    end
+  end
+
+  # Override methods in User model if necessary
+  require_dependency 'user'
+  class ::User
+    singleton_class.prepend EmailOverride
   end
 end
