@@ -168,7 +168,7 @@ after_initialize do
     end
   end
 
-  class EmailToken < ActiveRecord::Base
+  class EmailToken
     before_save :hash_email
 
     def self.find_by_email(email)
