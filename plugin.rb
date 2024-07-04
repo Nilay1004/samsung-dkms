@@ -90,8 +90,7 @@ after_initialize do
   end
 
   class ::UserEmail
-    before_create :set_placeholder_email
-    after_save :set_test_email
+    
     before_validation :set_temporary_email_for_validation, if: :email_changed?
     after_validation :restore_encrypted_email, if: :email_changed?
 
@@ -115,14 +114,6 @@ after_initialize do
 
     private
 
-    def set_placeholder_email
-      self.test_email = PIIEncryption.encrypt_email(self.email)
-      self.email = PIIEncryption.hash_email(self.email)
-    end
-
-    def set_test_email
-      self.update_column(:test_email, self.test_email)
-    end
 
     # Override methods that search by email
     def self.find_by_email(email)
