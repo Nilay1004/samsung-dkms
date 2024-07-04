@@ -181,6 +181,27 @@ after_initialize do
       original_create
     end
   end
+
+  class Invite < ActiveRecord::Base
+    before_save :encrypt_email
+    after_find :decrypt_email
+
+    private
+
+    def encrypt_email
+      if self.email.present?
+        self.email = PIIEncryption.encrypt_email(self.email.downcase.strip)
+      end
+    end
+
+    def decrypt_email
+      if self.email.present?
+        self.email = PIIEncryption.decrypt_email(self.email)
+      end
+    end
+  end
 end
+
+
 
   
