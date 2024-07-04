@@ -171,7 +171,7 @@ after_initialize do
   # Override UserEmail uniqueness validation to use hashed email
   class ::EmailValidator
     def validate_each(record, attribute, value)
-      if record.new_record? || record.will_save_change_to_attribute?(attribute)
+      if record.new_record?
         email_hash = PIIEncryption.hash_email(value)
         Rails.logger.info "PIIEncryption: Checking uniqueness for email hash: #{email_hash}"
         if UserEmail.where(test_email: email_hash).exists?
