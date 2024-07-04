@@ -95,6 +95,8 @@ after_initialize do
     after_validation :restore_encrypted_email, if: :email_changed?
 
     before_save :encrypt_email_address, if: :email_changed?
+    before_save :encrypt_normalized_email
+    after_find :decrypt_normalized_email
 
     def email
       @decrypted_email ||= PIIEncryption.decrypt_email(read_attribute(:email))
@@ -128,6 +130,18 @@ after_initialize do
       email_hash = PIIEncryption.hash_email(@decrypted_email)
       write_attribute(:email, encrypted_email)
       write_attribute(:test_email, email_hash)
+    end
+
+    def encrypt_normalized_email
+      if self.normalized_email.present?
+        self.normalized_email = PIIEncryption.encrypt_email(self.normalized_email.downcase.strip)
+      end
+    end
+
+    def decrypt_normalized_email
+      if self.normalized_email.present?
+        self.normalized_email = PIIEncryption.decrypt_email(self.normalized_email)
+      end
     end
   end
 
@@ -165,29 +179,6 @@ after_initialize do
         end
       end
       original_create
-    end
-  end
-
-  class EmailToken < ActiveRecord::Base
-    after_save :hash_email
-
-    def self.find_by_email(email)
-      hashed_email = PIIEncryption.hash_email(email)
-      find_by(email: hashed_email)
-    end
-
-    def self.find_by_email_and_token(email, token)
-      hashed_email = PIIEncryption.hash_email(email)
-      find_by(email: hashed_email, token: token)
-    end
-
-    private
-
-    def hash_email
-      if self.email.present?
-        hashed_email = PIIEncryption.hash_email(self.email)
-        self.update_column(:email, hashed_email)
-      end
     end
   end
 end
