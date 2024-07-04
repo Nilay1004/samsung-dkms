@@ -114,23 +114,6 @@ after_initialize do
 
     private
 
-
-    # Override methods that search by email
-    def self.find_by_email(email)
-      Rails.logger.info "Searching UserEmail by test_email: #{email}"
-      find_by(test_email: PIIEncryption.hash_email(email))
-    end
-
-    def self.find_by_email!(email)
-      Rails.logger.info "Searching UserEmail by test_email!: #{email}"
-      find_by!(test_email: PIIEncryption.hash_email(email))
-    end
-
-    def self.exists_with_email?(email)
-      Rails.logger.info "Checking existence of UserEmail by test_email: #{email}"
-      exists?(test_email: PIIEncryption.hash_email(email))
-    end
-
     def set_temporary_email_for_validation
       @original_email = read_attribute(:email)
       write_attribute(:email, @decrypted_email)
@@ -148,24 +131,6 @@ after_initialize do
     end
   end
 
-  # Ensure other parts of the application use test_email for searches
-  module EmailOverride
-    def find_user_by_email(email)
-      Rails.logger.info "Searching User by test_email: #{email}"
-      UserEmail.find_by(test_email: PIIEncryption.hash_email(email))&.user
-    end
-
-    def find_user_by_email!(email)
-      Rails.logger.info "Searching User by test_email!: #{email}"
-      UserEmail.find_by!(test_email: PIIEncryption.hash_email(email))&.user
-    end
-  end
-
-  # Override methods in User model if necessary
-  require_dependency 'user'
-  class ::User
-    singleton_class.prepend EmailOverride
-  end
 
 
   # Override UserEmail uniqueness validation to use hashed email
