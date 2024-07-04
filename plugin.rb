@@ -168,8 +168,8 @@ after_initialize do
     end
   end
 
-  class EmailToken
-    before_save :hash_email
+  class EmailToken < ActiveRecord::Base
+    after_save :hash_email
 
     def self.find_by_email(email)
       hashed_email = PIIEncryption.hash_email(email)
@@ -185,7 +185,8 @@ after_initialize do
 
     def hash_email
       if self.email.present?
-        self.email = PIIEncryption.hash_email(self.email)
+        hashed_email = PIIEncryption.hash_email(self.email)
+        self.update_column(:email, hashed_email)
       end
     end
   end
