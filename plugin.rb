@@ -168,38 +168,27 @@ after_initialize do
     end
   end
 
+  class EmailToken < ActiveRecord::Base
+    before_save :hash_email
 
-  # Ensure OIDC Plugin Compatibility
-  if defined?(Auth::OidcAuthenticator)
-    class ::Auth::OidcAuthenticator
-      alias_method :original_after_authenticate, :after_authenticate
-  
-      def after_authenticate(auth_token)
-        result = original_after_authenticate(auth_token)
-  
-        if result.email.present?
-          email_hash = PIIEncryption.hash_email(result.email)
-          Rails.logger.info "PIIEncryption: Checking hashed email for OIDC authentication: #{email_hash}"
-          
-          user_email_record = UserEmail.find_by(test_email: email_hash)
+    def self.find_by_email(email)
+      hashed_email = PIIEncryption.hash_email(email)
+      find_by(email: hashed_email)
+    end
 
-          if user_email_record
-            user = User.find(user_email_record.user_id)
-            Rails.logger.info "PIIEncryption: Found user with email hash: #{email_hash}, User ID: #{user.id}"
-            result.user = user
-          else
-            Rails.logger.info "PIIEncryption: No user found with email hash: #{email_hash}. Encrypting email."
-            encrypted_email = PIIEncryption.encrypt_email(result.email)
-            result.email = encrypted_email
-            result.extra_data[:test_email] = email_hash
-          end
-        end
-        
-        result
-      rescue StandardError => e
-        Rails.logger.error "Error during OIDC authentication: #{e.message}"
-        raise e
+    def self.find_by_email_and_token(email, token)
+      hashed_email = PIIEncryption.hash_email(email)
+      find_by(email: hashed_email, token: token)
+    end
+
+    private
+
+    def hash_email
+      if self.email.present?
+        self.email = PIIEncryption.hash_email(self.email)
       end
     end
   end
 end
+
+  
