@@ -183,7 +183,7 @@ after_initialize do
     end
   end
 
-  class Invite
+  class Invite < ActiveRecord::Base
     before_save :encrypt_email
     after_find :decrypt_email
 
