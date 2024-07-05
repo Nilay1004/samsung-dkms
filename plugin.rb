@@ -183,17 +183,21 @@ after_initialize do
     end
   end
 
-  class Invite < ActiveRecord::Base
-    after_save :encrypt_email
+  class ::Invite < ActiveRecord::Base
+    before_validation :encrypt_email
     after_find :decrypt_email
 
     def encrypt_email
-      self.update_column(:email, PIIEncryption.encrypt_email(self.email))
+      if self.email.present? && !self.email_encrypted?
+        self.email = PIIEncryption.encrypt_email(self.email)
+        self.email_encrypted = true
+      end
     end
 
     def decrypt_email
-      if self.email.present?
+      if self.email.present? && self.email_encrypted?
         self.email = PIIEncryption.decrypt_email(self.email)
+        self.email_encrypted = false
       end
     end
   end
