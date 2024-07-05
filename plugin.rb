@@ -184,7 +184,8 @@ after_initialize do
   end
 
   class ::Invite < ActiveRecord::Base
-    before_validation :encrypt_email
+    before_create :encrypt_email
+    before_update :encrypt_email
     after_find :decrypt_email
 
     def encrypt_email
