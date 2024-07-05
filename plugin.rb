@@ -28,6 +28,7 @@ after_initialize do
   Rails.logger.info "PIIEncryption: Plugin initialized"
   require_dependency 'user_email'
   require_dependency 'auth/default_current_user_provider'
+  require_dependency 'invite'
 
 
   module ::PIIEncryption
@@ -182,15 +183,13 @@ after_initialize do
     end
   end
 
-  class Invite < ActiveRecord::Base
+  class Invite
     before_save :encrypt_email
     after_find :decrypt_email
 
-    private
-
     def encrypt_email
       if self.email.present?
-        self.email = PIIEncryption.encrypt_email(self.email.downcase.strip)
+        self.email = PIIEncryption.encrypt_email(self.email)
       end
     end
 
