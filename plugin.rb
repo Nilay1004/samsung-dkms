@@ -185,17 +185,21 @@ after_initialize do
   end
 
   class ::InviteRedeemer
-    alias_method :orig_redeem, :redeem
+    alias_method :original_redeem, :redeem
 
     def redeem
-      self.email = PIIEncryption.encrypt_email(self.email)
-      orig_redeem
+      encrypted_email = PIIEncryption.encrypt_email(self.email)
+      Rails.logger.info("Encrypted Email: #{encrypted_email}")
+      self.email = encrypted_email
+      original_redeem
     end
   end
 
   class ::Invite
     def email
-      PIIEncryption.decrypt_email(read_attribute(:email))
+      decrypted_email = PIIEncryption.decrypt_email(read_attribute(:email))
+      Rails.logger.info("Decrypted Email: #{decrypted_email}")
+      decrypted_email
     end
   end
 end
