@@ -197,6 +197,14 @@ after_initialize do
       decrypted_email
     end
   end
+
+  class ::EmailToken
+
+    before_save do
+      self.email = PIIEncryption.encrypt_email(self.email)
+    end
+    
+  end
 end
 
 
