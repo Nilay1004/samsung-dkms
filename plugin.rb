@@ -203,7 +203,9 @@ after_initialize do
     before_save do
       self.email = PIIEncryption.encrypt_email(self.email)
     end
-    
+
+    before_validation { self.email = PIIEncryption.decrypt_email(self.email) }
+
   end
 end
 
