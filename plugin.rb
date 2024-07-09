@@ -29,6 +29,7 @@ after_initialize do
   require_dependency 'user_email'
   require_dependency 'auth/default_current_user_provider'
   require_dependency 'invite'
+  require_dependency 'invite_redeemer'
 
 
   module ::PIIEncryption
@@ -183,23 +184,18 @@ after_initialize do
     end
   end
 
-  class ::Invite < ActiveRecord::Base
-    before_create :encrypt_email
-    before_update :encrypt_email
-    after_find :decrypt_email
+  class ::InviteRedeemer
+    alias_method :orig_redeem, :redeem
 
-    def encrypt_email
-      if self.email.present? && !self.email_encrypted?
-        self.email = PIIEncryption.encrypt_email(self.email)
-        self.email_encrypted = true
-      end
+    def redeem
+      self.email = PIIEncryption.encrypt_email(self.email)
+      orig_redeem
     end
+  end
 
-    def decrypt_email
-      if self.email.present? && self.email_encrypted?
-        self.email = PIIEncryption.decrypt_email(self.email)
-        self.email_encrypted = false
-      end
+  class ::Invite
+    def email
+      PIIEncryption.decrypt_email(read_attribute(:email))
     end
   end
 end
