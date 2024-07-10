@@ -199,21 +199,15 @@ after_initialize do
   end
 
   class ::EmailToken
-    alias_method :original_create, :create
+    alias_method :original_email=, :email=
+    alias_method :original_email, :email
 
-    def create(email:, purpose:, user_id:, instance: nil)
-      encrypted_email = PIIEncryption.encrypt_email(email)
-      original_create(email: encrypted_email, purpose: purpose, user_id: user_id, instance: instance)
+    def email=(value)
+      self[:email] = PIIEncryption.encrypt_email(value)
     end
 
-    alias_method :original_find_by_token, :find_by_token
-
-    def find_by_token(token, **kwargs)
-      email_token = original_find_by_token(token, **kwargs)
-      if email_token
-        email_token.email = PIIEncryption.decrypt_email(email_token.email)
-      end
-      email_token
+    def email
+      PIIEncryption.decrypt_email(self[:email])
     end
   end
 end
