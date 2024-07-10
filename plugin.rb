@@ -199,16 +199,18 @@ after_initialize do
     end
   end
 
-  class ::EmailToken < ActiveRecord::Base
-    alias_method :original_email=, :email=
-    alias_method :original_email, :email
+  if defined?(::EmailToken)
+    class ::EmailToken
+      alias_method :original_email=, :email= if method_defined?(:email=)
 
-    def email=(value)
-      self[:email] = PIIEncryption.encrypt_email(value)
-    end
+      def email=(value)
+        encrypted_email = PIIEncryption.encrypt_email(value)
+        write_attribute(:email, encrypted_email)
+      end
 
-    def email
-      PIIEncryption.decrypt_email(self[:email])
+      def email
+        decrypted_email = PIIEncryption.decrypt_email(read_attribute(:email))
+      end
     end
   end
 end
