@@ -199,27 +199,21 @@ after_initialize do
   end
 
   class ::EmailToken
-    if defined?(EmailToken)
-      EmailToken.class_eval do
-        alias_method :original_create, :create
+    alias_method :original_create, :create
 
-        def create(email:, purpose:, user_id:, instance: nil)
-          encrypted_email = PIIEncryption.encrypt_email(email)
-          original_create(email: encrypted_email, purpose: purpose, user_id: user_id, instance: instance)
-        end
+    def create(email:, purpose:, user_id:, instance: nil)
+      encrypted_email = PIIEncryption.encrypt_email(email)
+      original_create(email: encrypted_email, purpose: purpose, user_id: user_id, instance: instance)
+    end
 
-        alias_method :original_find_by_token, :find_by_token
+    alias_method :original_find_by_token, :find_by_token
 
-        def find_by_token(token, **kwargs)
-          email_token = original_find_by_token(token, **kwargs)
-          if email_token
-            email_token.email = PIIEncryption.decrypt_email(email_token.email)
-          end
-          email_token
-        end
+    def find_by_token(token, **kwargs)
+      email_token = original_find_by_token(token, **kwargs)
+      if email_token
+        email_token.email = PIIEncryption.decrypt_email(email_token.email)
       end
-    else
-      Rails.logger.error("EmailToken class not found, plugin discourse-encrypt-email-tokens cannot be loaded.")
+      email_token
     end
   end
 end
