@@ -198,7 +198,7 @@ after_initialize do
     end
   end
 
-  class ::EmailToken
+  class ::EmailToken < ActiveRecord::Base
     alias_method :original_email=, :email=
     alias_method :original_email, :email
 
