@@ -30,6 +30,7 @@ after_initialize do
   require_dependency 'auth/default_current_user_provider'
   require_dependency 'invite'
   require_dependency 'invite_redeemer'
+  require_dependency 'email_token'
 
 
   module ::PIIEncryption
