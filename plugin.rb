@@ -27,9 +27,7 @@ require 'json'
 after_initialize do
   Rails.logger.info "PIIEncryption: Plugin initialized"
   require_dependency 'user_email'
-  require_dependency 'auth/default_current_user_provider'
   require_dependency 'invite'
-  require_dependency 'invite_redeemer'
   require_dependency 'email_token'
 
 
@@ -93,7 +91,7 @@ after_initialize do
   end
 
   class ::UserEmail
-    
+    Rails.logger.info "----------Overrided UserEmail class----------"
     before_validation :set_temporary_email_for_validation, if: :email_changed?
     after_validation :restore_encrypted_email, if: :email_changed?
 
@@ -110,7 +108,7 @@ after_initialize do
       encrypted_email = PIIEncryption.encrypt_email(value)
       email_hash = PIIEncryption.hash_email(value)
       write_attribute(:email, encrypted_email)
-      write_attribute(:test_email, email_hash)
+      write_attribute(:hashed_email, email_hash)
     end
 
     def decrypted_email
@@ -132,7 +130,7 @@ after_initialize do
       encrypted_email = PIIEncryption.encrypt_email(@decrypted_email)
       email_hash = PIIEncryption.hash_email(@decrypted_email)
       write_attribute(:email, encrypted_email)
-      write_attribute(:test_email, email_hash)
+      write_attribute(:hashed_email, email_hash)
     end
 
     def encrypt_normalized_email
@@ -152,11 +150,12 @@ after_initialize do
 
   # Override UserEmail uniqueness validation to use hashed email
   class ::EmailValidator
+    Rails.logger.info "----------Overrided EmailValidator----------"
     def validate_each(record, attribute, value)
       if record.new_record?
         email_hash = PIIEncryption.hash_email(value)
         Rails.logger.info "PIIEncryption: Checking uniqueness for email hash: #{email_hash}"
-        if UserEmail.where(test_email: email_hash).exists?
+        if UserEmail.where(hashed_email: email_hash).exists?
           Rails.logger.info "PIIEncryption: Email hash already taken: #{email_hash}"
           record.errors.add(attribute, :taken)
         else
@@ -169,13 +168,14 @@ after_initialize do
   # Add this at the bottom of plugin.rb to override the SessionController
   require_dependency 'session_controller'
   class ::SessionController
+    Rails.logger.info "----------Overrided SessionController class----------"
     alias_method :original_create, :create
 
     def create
       if params[:login].present?
         email_hash = ::PIIEncryption.hash_email(params[:login])
         Rails.logger.info "PIIEncryption: Hashing email for login: #{email_hash}"
-        user_email_record = UserEmail.find_by(test_email: email_hash)
+        user_email_record = UserEmail.find_by(hashed_email: email_hash)
         if user_email_record
           user = User.find(user_email_record.user_id)
           params[:login] = user.username
@@ -187,7 +187,7 @@ after_initialize do
 
 
   class ::Invite
-
+    Rails.logger.info "----------Overrided Invite class----------"
     before_save do
       self.email = PIIEncryption.encrypt_email(self.email)
     end
@@ -201,6 +201,7 @@ after_initialize do
 
   if defined?(::EmailToken)
     class ::EmailToken
+      Rails.logger.info "----------Overrided EmailToken class----------"
       alias_method :original_email=, :email= if method_defined?(:email=)
 
       def email=(value)

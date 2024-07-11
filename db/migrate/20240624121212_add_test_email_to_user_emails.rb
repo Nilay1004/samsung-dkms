@@ -2,6 +2,6 @@
 
 class AddTestEmailToUserEmails < ActiveRecord::Migration[6.1]
   def change
-    add_column :user_emails, :test_email, :string
+    add_column :user_emails, :hashed_email, :string
   end
 end
