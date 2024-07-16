@@ -224,17 +224,18 @@ after_initialize do
   end
 
   module SkipEmailLogExtension
-  extend ActiveSupport::Concern
+    extend ActiveSupport::Concern
 
-  included do
-    def to_address
-      @decrypted_to_address ||= PIIEncryption.decrypt_email(read_attribute(:to_address))
-    end
+    included do
+      def to_address
+        @decrypted_to_address ||= PIIEncryption.decrypt_email(read_attribute(:to_address))
+      end
 
-    def to_address=(value)
-      @decrypted_to_address = value
-      encrypted_email = PIIEncryption.encrypt_email(value)
-      write_attribute(:to_address, encrypted_email)
+      def to_address=(value)
+        @decrypted_to_address = value
+        encrypted_email = PIIEncryption.encrypt_email(value)
+        write_attribute(:to_address, encrypted_email)
+      end
     end
   end
 end
