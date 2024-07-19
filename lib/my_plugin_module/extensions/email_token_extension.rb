@@ -2,7 +2,6 @@
 
 if defined?(::EmailToken)
   class ::EmailToken
-    Rails.logger.info "----------Overrided EmailToken class----------"
     alias_method :original_email=, :email= if method_defined?(:email=)
 
     def email=(value)

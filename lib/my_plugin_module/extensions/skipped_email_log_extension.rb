@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ::SkippedEmailLog
-  Rails.logger.info "----------Enhanced SkippedEmailLog class----------"
+  
     
   before_save :encrypt_to_address
   after_initialize :decrypt_to_address

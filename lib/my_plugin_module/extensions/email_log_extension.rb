@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class ::EmailLog
-  Rails.logger.info "----------Enhanced EmailLog class----------"
   
   before_save :encrypt_to_address
   after_initialize :decrypt_to_address

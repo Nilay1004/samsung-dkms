@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ::UserEmail
-  Rails.logger.info "----------Overridden UserEmail class----------"
+  
   before_validation :set_temporary_email_for_validation, if: :email_changed?
   after_validation :restore_encrypted_email, if: :email_changed?
 
