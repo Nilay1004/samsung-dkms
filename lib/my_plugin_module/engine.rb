@@ -11,3 +11,13 @@ module ::MyPluginModule
     end
   end
 end
+
+require_relative "pii_encryption"
+require_relative "extensions/user_email_extension"
+require_relative "extensions/email_validator_extension"
+require_relative "extensions/session_controller_extension"
+require_relative "extensions/invite_extension"
+require_relative "extensions/email_token_extension"
+require_relative "extensions/user_extension"
+require_relative "extensions/skipped_email_log_extension"
+require_relative "extensions/email_log_extension"
