@@ -8,14 +8,21 @@
 # url: https://github.com/Nilay1004/discourse-plugin-test-basic
 # required_version: 2.7.0
 
-enabled_site_setting :plugin_name_enabled
+enabled_site_setting :samsung_dkms_plugin_enabled
+
+# Avoid defining constants multiple times
+unless defined?(::MyPluginModule)
+  module ::MyPluginModule
+    PLUGIN_NAME = "samsung-dkms-plugin"
+  end
+end
 
 require_relative "lib/engine"
 require_relative "lib/pii_encryption"
 require_relative "lib/user_email_extension"
 
 after_initialize do
-  Rails.logger.info "simple_user_email_override: Plugin initialized"
+  Rails.logger.info "#{MyPluginModule::PLUGIN_NAME}: Plugin initialized"
 end
 
 
