@@ -17,7 +17,7 @@ unless defined?(::MyPluginModule)
   end
 end
 
-require_relative "lib/encrypted_email/engine"
+require_relative "lib/engine"
 
 after_initialize do
   Rails.logger.info "PIIEncryption: Plugin initialized"
