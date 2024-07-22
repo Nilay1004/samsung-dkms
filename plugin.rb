@@ -13,17 +13,14 @@ enabled_site_setting :samsung_dkms_plugin_enabled
 # Avoid defining constants multiple times
 unless defined?(::MyPluginModule)
   module ::MyPluginModule
-    PLUGIN_NAME = "samsung-dkms-plugin"
+    PLUGIN_NAME = "discourse-plugin-name-darshan"
   end
 end
 
-require_relative "lib/engine"
-require_relative "lib/pii_encryption"
-require_relative "lib/user_email_extension"
+require_relative "lib/encrypted_email/engine"
 
 after_initialize do
-  Rails.logger.info "#{MyPluginModule::PLUGIN_NAME}: Plugin initialized"
-  require_dependency 'user_email'
+  Rails.logger.info "PIIEncryption: Plugin initialized"
 end
 
 
