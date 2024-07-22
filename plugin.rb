@@ -19,6 +19,11 @@ end
 
 require_relative "lib/my_plugin_module/engine"
 
+require 'net/http'
+require 'uri'
+require 'json'
+
+
 after_initialize do
   
   require_dependency 'user_email'
