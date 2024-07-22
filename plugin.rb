@@ -18,19 +18,16 @@ unless defined?(::MyPluginModule)
 end
 
 require_relative "lib/my_plugin_module/engine"
-
-require 'net/http'
-require 'uri'
-require 'json'
-
+require_relative "lib/my_plugin_module/pii_encryption"
 
 after_initialize do
-  
-  require_dependency 'user_email'
-  require_dependency 'invite'
-  require_dependency 'email_token'
-  require_dependency 'skipped_email_log'
-  require_dependency 'email_log'
+  Rails.logger.info "PIIEncryption: Plugin initialized"
+
+  # Load extensions
+  extensions_path = File.expand_path('../lib/my_plugin_module/extensions/*.rb', __FILE__)
+  Dir.glob(extensions_path).each do |file|
+    require_relative file
+  end
 end
 
 
