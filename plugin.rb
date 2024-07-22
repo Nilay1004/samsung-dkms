@@ -23,6 +23,7 @@ require_relative "lib/user_email_extension"
 
 after_initialize do
   Rails.logger.info "#{MyPluginModule::PLUGIN_NAME}: Plugin initialized"
+  require_dependency 'user_email'
 end
 
 

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_dependency 'user_email'
-
 class ::UserEmail
   
   before_validation :set_temporary_email_for_validation, if: :email_changed?
