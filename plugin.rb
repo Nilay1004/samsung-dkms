@@ -21,6 +21,7 @@ require_relative "lib/engine"
 
 after_initialize do
   Rails.logger.info "PIIEncryption: Plugin initialized"
+  require_dependency 'user_email'
 end
 
 

@@ -46,8 +46,6 @@ module ::EncryptedEmail
     isolate_namespace EncryptedEmail
   end
 
-  require_dependency 'user_email'
-
   class ::UserEmail
     Rails.logger.info "----------Overrided UserEmail class----------"
 
