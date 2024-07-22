@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class ::UserEmail < ApplicationRecord
+require_dependency 'user_email'
+
+class ::UserEmail
   
   before_validation :set_temporary_email_for_validation, if: :email_changed?
   after_validation :restore_encrypted_email, if: :email_changed?

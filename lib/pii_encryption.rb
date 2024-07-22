@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'net/http'
+require 'uri'
+require 'json'
+
 module PIIEncryption
   def self.encrypt_email(email)
     return email if email.nil? || email.empty?

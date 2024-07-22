@@ -10,24 +10,12 @@
 
 enabled_site_setting :plugin_name_enabled
 
-# Avoid defining constants multiple times
-unless defined?(::MyPluginModule)
-  module ::MyPluginModule
-    PLUGIN_NAME = "Samsung DKMS PLUGIN"
-  end
-end
-
-require_relative "lib/my_plugin_module/engine"
-require_relative "lib/my_plugin_module/pii_encryption"
+require_relative "lib/engine"
+require_relative "lib/pii_encryption"
+require_relative "lib/user_email_extension"
 
 after_initialize do
-  Rails.logger.info "PIIEncryption: Plugin initialized"
-
-  # Load extensions
-  extensions_path = File.expand_path('../lib/my_plugin_module/extensions/*.rb', __FILE__)
-  Dir.glob(extensions_path).each do |file|
-    require_relative file
-  end
+  Rails.logger.info "simple_user_email_override: Plugin initialized"
 end
 
 
