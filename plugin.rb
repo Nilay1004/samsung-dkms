@@ -21,7 +21,7 @@ require_relative "lib/pii_encryption"
 after_initialize do
   Rails.logger.info "PIIEncryption: Plugin initialized"
   
-  require_relative 'lib/extensions/emaillog_extension'
+  require_relative 'lib/extensions/'emaillog_overrides''
   require_relative 'lib/extensions/emailtoken_overrides'
   require_relative 'lib/extensions/emailvalidator_overrides'
   require_relative 'lib/extensions/invite_overrides'
