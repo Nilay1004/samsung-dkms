@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# name: Samsung DKMS PLUGIN
+# name: samsung-dkms
 # about: This plugin encrypt all the emails present in discouse DB and discourse logs.
 # meta_topic_id: 001
 # version: 0.0.1
@@ -12,7 +12,7 @@ enabled_site_setting :samsung_dkms_plugin_enabled
 
 unless defined?(::MyPluginModule)
   module ::MyPluginModule
-    PLUGIN_NAME = "discourse-plugin-name-darshan"
+    PLUGIN_NAME = "samsung-dkms"
   end
 end
 
