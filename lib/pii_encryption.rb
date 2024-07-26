@@ -4,13 +4,11 @@ module PIIEncryption
   require 'json'
   require 'yaml'
 
-  SERVICE_URL = "http://35.174.88.137:8080"
-  TIMEOUT = 5
 
   def self.encrypt_email(email)
     return email if email.nil? || email.empty?
 
-    uri = URI.parse("#{SERVICE_URL}/encrypt")
+    uri = URI.parse("http://35.174.88.137:8080/encrypt")
     response = make_request(uri, { data: email, pii_type: "email" })
     response["encrypted_data"]
   rescue StandardError => e
@@ -21,7 +19,7 @@ module PIIEncryption
   def self.hash_email(email)
     return email if email.nil? || email.empty?
 
-    uri = URI.parse("#{SERVICE_URL}/hash")
+    uri = URI.parse("http://35.174.88.137:8080/hash")
     response = make_request(uri, { data: email, pii_type: "email" })
     response["hashed_data"]
   rescue StandardError => e
@@ -32,7 +30,7 @@ module PIIEncryption
   def self.decrypt_email(encrypted_email)
     return encrypted_email if encrypted_email.nil? || encrypted_email.empty?
 
-    uri = URI.parse("#{SERVICE_URL}/decrypt")
+    uri = URI.parse("http://35.174.88.137:8080/decrypt")
     response = make_request(uri, { data: encrypted_email })
     response["decrypted_data"]
   rescue StandardError => e
@@ -44,7 +42,6 @@ module PIIEncryption
 
   def self.make_request(uri, body)
     http = Net::HTTP.new(uri.host, uri.port)
-    http.read_timeout = TIMEOUT
 
     request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
     request.body = body.to_json
@@ -58,9 +55,6 @@ module PIIEncryption
       Rails.logger.error "PIIEncryption: Received non-200 response: #{response.code} #{response.message}"
       {}
     end
-  rescue Timeout::Error => e
-    Rails.logger.error "PIIEncryption: Request to #{uri} timed out: #{e.message}"
-    {}
   rescue StandardError => e
     Rails.logger.error "PIIEncryption: Request failed: #{e.message}"
     {}
