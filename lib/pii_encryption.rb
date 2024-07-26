@@ -11,7 +11,7 @@ module PIIEncryption
   end
 
   def self.decrypt_email(encrypted_email)
-    handle_pii_request("#{API_URL}/decrypt", encrypted_email, 'email', "hashed_data")
+    handle_pii_request("#{API_URL}/decrypt", encrypted_email, 'email', "decrypted_data")
   end
 
   private
