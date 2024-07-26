@@ -3,25 +3,25 @@ module PIIEncryption
   CONTENT_TYPE = 'application/json'
 
   def self.encrypt_email(email)
-    handle_pii_request("#{API_URL}/encrypt", email, "encrypting")
+    handle_pii_request("#{API_URL}/encrypt", email, 'email', "encrypting")
   end
 
   def self.hash_email(email)
-    handle_pii_request("#{API_URL}/hash", email, "hashing")
+    handle_pii_request("#{API_URL}/hash", email, 'email', "hashing")
   end
 
   def self.decrypt_email(encrypted_email)
-    handle_pii_request("#{API_URL}/decrypt", encrypted_email, "decrypting")
+    handle_pii_request("#{API_URL}/decrypt", encrypted_email, 'email', "decrypting")
   end
 
   private
 
-  def self.handle_pii_request(uri, data, action)
+  def self.handle_pii_request(uri, data, pii_type, action)
     return data if data.nil? || data.empty?
 
     http = Net::HTTP.new(URI.parse(uri).host, URI.parse(uri).port)
     request = Net::HTTP::Post.new(URI.parse(uri).path, 'Content-Type' => CONTENT_TYPE)
-    request.body = { data: data }.to_json
+    request.body = { data: data, pii_type: pii_type }.to_json
 
     Rails.logger.info "PIIEncryption: Sending #{action} request for data: #{data}"
 
