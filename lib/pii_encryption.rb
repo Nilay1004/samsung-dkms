@@ -1,5 +1,5 @@
 module PIIEncryption
-  API_URL = SiteSetting.service_url
+  API_URL = "http://35.174.88.137:8080"
   CONTENT_TYPE = 'application/json'
 
   def self.encrypt_email(email)
