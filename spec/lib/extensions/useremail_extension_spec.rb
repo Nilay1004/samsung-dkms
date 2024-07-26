@@ -28,7 +28,7 @@ RSpec.describe UserEmail, type: :model do
     it 'encrypts email address before save' do
       user_email.save
       expect(user_email.read_attribute(:email)).to eq(encrypted_email)
-      expect(user_email.read_attribute(:test_email)).to eq(hashed_email)
+      expect(user_email.read_attribute(:hashed_email)).to eq(hashed_email)
     end
 
     it 'encrypts normalized email before save' do
@@ -58,7 +58,7 @@ RSpec.describe UserEmail, type: :model do
     it 'sets and encrypts the email' do
       user_email.email = email
       expect(user_email.read_attribute(:email)).to eq(encrypted_email)
-      expect(user_email.read_attribute(:test_email)).to eq(hashed_email)
+      expect(user_email.read_attribute(:hashed_email)).to eq(hashed_email)
     end
   end
 

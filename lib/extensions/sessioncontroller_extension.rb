@@ -10,7 +10,7 @@ class ::SessionController
     if params[:login].present?
       email_hash = ::PIIEncryption.hash_email(params[:login])
       
-      user_email_record = UserEmail.find_by(test_email: email_hash)
+      user_email_record = UserEmail.find_by(hashed_email: email_hash)
       if user_email_record
         user = User.find(user_email_record.user_id)
         params[:login] = user.username

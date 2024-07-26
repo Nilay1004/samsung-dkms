@@ -8,7 +8,7 @@ RSpec.describe SessionController, type: :controller do
     let(:username) { 'testuser' }
     let(:hashed_email) { PIIEncryption.hash_email(email) }
     let(:user) { create(:user, username: username) }
-    let!(:user_email) { create(:user_email, user: user, email: email, test_email: hashed_email) }
+    let!(:user_email) { create(:user_email, user: user, email: email, hashed_email: hashed_email) }
 
     before do
       allow(PIIEncryption).to receive(:hash_email).with(email).and_return(hashed_email)
@@ -19,7 +19,7 @@ RSpec.describe SessionController, type: :controller do
         post :create, params: { login: email }
 
         expect(PIIEncryption).to have_received(:hash_email).with(email)
-        expect(UserEmail).to exist(test_email: hashed_email)
+        expect(UserEmail).to exist(hashed_email: hashed_email)
       end
 
       it 'replaces params[:login] with the username if user is found' do

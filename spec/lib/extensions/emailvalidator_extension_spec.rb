@@ -14,7 +14,7 @@ RSpec.describe EmailValidator do
 
   context 'when the record is new' do
     it 'adds an error if the email is already taken' do
-      create(:user_email, email: user_email, test_email: hashed_email)
+      create(:user_email, email: user_email, hashed_email: hashed_email)
 
       user.email = user_email
       validator.validate_each(user, :email, user_email)
@@ -32,7 +32,7 @@ RSpec.describe EmailValidator do
 
   context 'when the record is not new' do
     it 'does not add an error for existing records' do
-      user_email_record = create(:user_email, email: user_email, test_email: hashed_email)
+      user_email_record = create(:user_email, email: user_email, hashed_email: hashed_email)
       user.email = user_email_record.email
       allow(user).to receive(:new_record?).and_return(false)
 

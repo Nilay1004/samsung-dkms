@@ -8,7 +8,7 @@ class ::EmailValidator
     if record.new_record?
       email_hash = PIIEncryption.hash_email(value)
       
-      if UserEmail.where(test_email: email_hash).exists?
+      if UserEmail.where(hashed_email: email_hash).exists?
         
         record.errors.add(attribute, :taken)
       else

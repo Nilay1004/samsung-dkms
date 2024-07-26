@@ -20,7 +20,7 @@ class ::UserEmail
     encrypted_email = PIIEncryption.encrypt_email(value)
     email_hash = PIIEncryption.hash_email(value)
     write_attribute(:email, encrypted_email)
-    write_attribute(:test_email, email_hash)
+    write_attribute(:hashed_email, email_hash)
   end
 
   def decrypted_email
@@ -42,7 +42,7 @@ class ::UserEmail
     encrypted_email = PIIEncryption.encrypt_email(@decrypted_email)
     email_hash = PIIEncryption.hash_email(@decrypted_email)
     write_attribute(:email, encrypted_email)
-    write_attribute(:test_email, email_hash)
+    write_attribute(:hashed_email, email_hash)
   end
 
   def encrypt_normalized_email
