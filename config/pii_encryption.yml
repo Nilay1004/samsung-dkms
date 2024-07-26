@@ -1,0 +1,4 @@
+
+pii_encryption:
+  service_url: "http://35.174.88.137:8080"
+  timeout: 5 # Timeout in seconds for the HTTP requests
