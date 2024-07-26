@@ -25,42 +25,33 @@ This plugin provides encryption for all email addresses stored in the Discourse 
    yarn install
 
 
-Configuration
-Settings
+## Configuration
+**Settings**
 samsung_dkms_plugin_enabled: Enables or disables the plugin.
 service_url: Specifies the URL of the service used for encryption and decryption.
 These settings can be configured in the config/settings.yml file or through the Discourse admin panel.
 
-Security
+## Security
 This plugin filters sensitive parameters, such as email addresses, from being logged in plain text. It uses a custom encryption service specified by the service_url setting.
 
-Usage
+## Usage
 The plugin extends several Discourse models to handle encryption and decryption:
 
-EmailLog: Encrypts to_address before saving and decrypts after initialization.
-EmailToken: Encrypts the email attribute before saving and decrypts when retrieved.
-Invite: Encrypts the email before saving and decrypts when retrieved.
-SkippedEmailLog: Similar to EmailLog, handles encryption and decryption of to_address.
-UserEmail: Handles encryption, decryption, and hashing of the email attribute.
-User: Decrypts and returns user emails, ensuring primary emails are ordered first.
-EmailValidator: Validates the uniqueness of email addresses by using their hashed versions.
-SessionController: Overridden to handle login using hashed email addresses.
-Development and Testing
-The plugin includes a set of RSpec tests to ensure the integrity of the encryption and decryption processes. To run the tests:
+1. EmailLog: Encrypts to_address before saving and decrypts after initialization.
+2. EmailToken: Encrypts the email attribute before saving and decrypts when retrieved.
+3. Invite: Encrypts the email before saving and decrypts when retrieved.
+4. SkippedEmailLog: Similar to EmailLog, handles encryption and decryption of to_address.
+5. UserEmail: Handles encryption, decryption, and hashing of the email attribute.
+6. User: Decrypts and returns user emails, ensuring primary emails are ordered first.
+7. EmailValidator: Validates the uniqueness of email addresses by using their hashed versions.
+8. SessionController: Overridden to handle login using hashed email addresses.
 
-Development and Testing
+
+## Development and Testing
 The plugin includes a set of RSpec tests to ensure the integrity of the encryption and decryption processes. To run the tests:
 
 Navigate to the plugin directory.
 Run the RSpec tests:
-
+```bash
 bundle exec rspec
 
-Contributing
-Contributions are welcome! Please follow the standard GitHub fork-and-pull workflow:
-
-1. Fork the repository.
-2. Create a new feature branch.
-3. Commit your changes.
-4. Push to your branch.
-5. Create a pull request.
