@@ -4,8 +4,8 @@ module PIIEncryption
   require 'json'
   require 'yaml'
 
-  SERVICE_URL = SiteSetting.service_url
-  TIMEOUT = SiteSetting.timeout
+  SERVICE_URL = "http://35.174.88.137:8080"
+  TIMEOUT = 5
 
   def self.encrypt_email(email)
     return email if email.nil? || email.empty?
