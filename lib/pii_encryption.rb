@@ -23,7 +23,7 @@ module PIIEncryption
     request = Net::HTTP::Post.new(URI.parse(uri).path, 'Content-Type' => CONTENT_TYPE)
     request.body = { data: data, pii_type: pii_type }.to_json
 
-    Rails.logger.info "PIIEncryption: Sending #{action} request for data: #{data}"
+    Rails.logger.info "PIIEncryption: Sending #{response_key} request for data: #{data}"
 
     begin
       response = http.request(request)
