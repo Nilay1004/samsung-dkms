@@ -4,9 +4,8 @@ module PIIEncryption
   require 'json'
   require 'yaml'
 
-  CONFIG = YAML.load_file(Rails.root.join('config', 'pii_encryption.yml'))['pii_encryption']
-  SERVICE_URL = CONFIG['service_url']
-  TIMEOUT = CONFIG['timeout'] || 5
+  SERVICE_URL = SiteSetting.service_url
+  TIMEOUT = SiteSetting.timeout
 
   def self.encrypt_email(email)
     return email if email.nil? || email.empty?
