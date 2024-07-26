@@ -1,58 +1,47 @@
-module ::PIIEncryption
+module PIIEncryption
+  API_URL = "http://35.174.88.137:8080"
+  CONTENT_TYPE = 'application/json'
+
   def self.encrypt_email(email)
-    return email if email.nil? || email.empty?
-
-    uri = URI.parse("http://35.174.88.137:8080/encrypt")
-    http = Net::HTTP.new(uri.host, uri.port)
-
-    request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
-    request.body = { data: email, pii_type: "email" }.to_json
-    Rails.logger.info "PIIEncryption: Sending encryption request for email: #{email}"
-    response = http.request(request)
-
-    encrypted_email = JSON.parse(response.body)["encrypted_data"]
-    Rails.logger.info "PIIEncryption: Encrypted email: #{encrypted_email}"
-    encrypted_email
-  rescue StandardError => e
-    Rails.logger.error "Error encrypting email: #{e.message}"
-    email
+    handle_pii_request("#{API_URL}/encrypt", email, "encrypting")
   end
 
   def self.hash_email(email)
-    return email if email.nil? || email.empty?
-
-    uri = URI.parse("http://35.174.88.137:8080/hash")
-    http = Net::HTTP.new(uri.host, uri.port)
-
-    request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
-    request.body = { data: email, pii_type: "email" }.to_json
-    Rails.logger.info "PIIEncryption: Sending hash request for email: #{email}"
-    response = http.request(request)
-
-    email_hash = JSON.parse(response.body)["hashed_data"]
-    Rails.logger.info "PIIEncryption: Email hash: #{email_hash}"
-    email_hash
-  rescue StandardError => e
-    Rails.logger.error "Error hashing email: #{e.message}"
-    email
+    handle_pii_request("#{API_URL}/hash", email, "hashing")
   end
 
   def self.decrypt_email(encrypted_email)
-    return encrypted_email if encrypted_email.nil? || encrypted_email.empty?
+    handle_pii_request("#{API_URL}/decrypt", encrypted_email, "decrypting")
+  end
 
-    uri = URI.parse("http://35.174.88.137:8080/decrypt")
-    http = Net::HTTP.new(uri.host, uri.port)
+  private
 
-    request = Net::HTTP::Post.new(uri.path, 'Content-Type' => 'application/json')
-    request.body = { data: encrypted_email }.to_json
-    Rails.logger.info "PIIEncryption: Sending decryption request for encrypted email: #{encrypted_email}"
-    response = http.request(request)
+  def self.handle_pii_request(uri, data, action)
+    return data if data.nil? || data.empty?
 
-    decrypted_email = JSON.parse(response.body)["decrypted_data"]
-    Rails.logger.info "PIIEncryption: Decrypted email: #{decrypted_email}"
-    decrypted_email
-  rescue StandardError => e
-    Rails.logger.error "Error decrypting email: #{e.message}"
-    encrypted_email
+    http = Net::HTTP.new(URI.parse(uri).host, URI.parse(uri).port)
+    request = Net::HTTP::Post.new(URI.parse(uri).path, 'Content-Type' => CONTENT_TYPE)
+    request.body = { data: data }.to_json
+
+    Rails.logger.info "PIIEncryption: Sending #{action} request for data: #{data}"
+
+    begin
+      response = http.request(request)
+      if response.is_a?(Net::HTTPSuccess)
+        response_data = JSON.parse(response.body)["#{action == "decrypting" ? "decrypted_data" : "encrypted_data" || "hashed_data"}"]
+        Rails.logger.info "PIIEncryption: #{action.capitalize} successful: #{response_data}"
+        response_data
+      else
+        handle_error(response, action, data)
+      end
+    rescue StandardError => e
+      Rails.logger.error "Error #{action} data: #{e.message}"
+      data
+    end
+  end
+
+  def self.handle_error(response, action, data)
+    Rails.logger.error "PIIEncryption: Failed to #{action} data. HTTP Status: #{response.code}, Message: #{response.message}"
+    data
   end
 end
