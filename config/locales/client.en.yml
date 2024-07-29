@@ -3,7 +3,7 @@ en:
     admin:
       site_settings:
         categories:
-          TODO_plugin_name: "Plugin Name"
+          TODO_plugin_name: "samsung dkms"
   js:
     discourse_plugin_name:
       placeholder: placeholder
