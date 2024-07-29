@@ -37,7 +37,7 @@ This plugin filters sensitive parameters, such as email addresses, from being lo
 ## Usage
 The plugin extends several Discourse models to handle encryption and decryption:
 
-'''ruby
+'''
 class ::EmailValidator
   Rails.logger.info "----------Overrided EmailValidator----------"
   def validate_each(record, attribute, value)
@@ -53,6 +53,7 @@ class ::EmailValidator
     end
   end
 end
+'''
 
 1. EmailLog: Encrypts to_address before saving and decrypts after initialization.
 2. EmailToken: Encrypts the email attribute before saving and decrypts when retrieved.
