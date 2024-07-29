@@ -37,6 +37,43 @@ This plugin filters sensitive parameters, such as email addresses, from being lo
 ## Usage
 The plugin extends several Discourse models to handle encryption and decryption:
 
+'''ruby
+class ::EmailValidator
+    Rails.logger.info "----------Overrided EmailValidator----------"
+    def validate_each(record, attribute, value)
+      if record.new_record?
+        email_hash = PIIEncryption.hash_email(value)
+        Rails.logger.info "PIIEncryption: Checking uniqueness for email hash: #{email_hash}"
+        if UserEmail.where(test_email: email_hash).exists?
+          Rails.logger.info "PIIEncryption: Email hash already taken: #{email_hash}"
+          record.errors.add(attribute, :taken)
+        else
+          Rails.logger.info "PIIEncryption: Email hash available: #{email_hash}"
+        end
+      end
+    end
+  end
+
+  # Add this at the bottom of plugin.rb to override the SessionController
+  require_dependency 'session_controller'
+  class ::SessionController
+    Rails.logger.info "----------Overrided SessionController class----------"
+    alias_method :original_create, :create
+
+    def create
+      if params[:login].present?
+        email_hash = ::PIIEncryption.hash_email(params[:login])
+        Rails.logger.info "PIIEncryption: Hashing email for login: #{email_hash}"
+        user_email_record = UserEmail.find_by(test_email: email_hash)
+        if user_email_record
+          user = User.find(user_email_record.user_id)
+          params[:login] = user.username
+        end
+      end
+      original_create
+    end
+  end
+
 1. EmailLog: Encrypts to_address before saving and decrypts after initialization.
 2. EmailToken: Encrypts the email attribute before saving and decrypts when retrieved.
 3. Invite: Encrypts the email before saving and decrypts when retrieved.
