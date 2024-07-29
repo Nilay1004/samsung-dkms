@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# This extension ensures that email data is encrypted before being stored in the email_tokens table and decrypted when accessed.
+
 require_dependency 'email_token'
 
 if defined?(::EmailToken)

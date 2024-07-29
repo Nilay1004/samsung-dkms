@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# This extension modifies the EmailLog class to encrypt the to_address field of email_logs table before saving it to the database and decrypt it upon retrieval. This ensures that email addresses are stored encrypted.
+
 class ::EmailLog
   
   before_save :encrypt_to_address

@@ -16,6 +16,7 @@ unless defined?(::MyPluginModule)
   end
 end
 
+# Loads the extensions defined in the lib/extensions directory.
 require_relative "lib/pii_encryption"
 
 after_initialize do

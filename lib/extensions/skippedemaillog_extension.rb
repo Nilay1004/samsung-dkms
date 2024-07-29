@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# This code ensures that email addresses in the skipped_email_logs table are encrypted before saving and decrypted when accessed.
+
 class ::SkippedEmailLog
   
     

@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
+# Encrypts and hashes the email before saving it to the user_emails table.
+# Ensures that the normalized_email is also encrypted.
+# Provides methods to decrypt emails when accessing the email and normalized_email attributes.
+# It includes validation steps to handle email encryption and decryption during validation processes.
+
 require_dependency 'user_email'
 
 class ::UserEmail
-  Rails.logger.info "----------Overrided UserEmail class----------"
+  
   before_validation :set_temporary_email_for_validation, if: :email_changed?
   after_validation :restore_encrypted_email, if: :email_changed?
 

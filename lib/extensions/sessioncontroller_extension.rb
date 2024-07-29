@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# This extension for the SessionController intercepts the login process. It hashes the login parameter (email), finds the corresponding user by the hashed email, and replaces the login parameter with the username if the user exists. This integration helps maintain email privacy during authentication.
+
 require_dependency 'session_controller'
 
 class ::SessionController

@@ -1,3 +1,6 @@
+
+# This module defines methods for encrypting, hashing, and decrypting emails. It sends HTTP requests to a samsung dkms service for these operations and handles errors and logging.
+
 module PIIEncryption
   API_URL = "http://35.174.88.137:8080"
   CONTENT_TYPE = 'application/json'
@@ -23,7 +26,7 @@ module PIIEncryption
     request = Net::HTTP::Post.new(URI.parse(uri).path, 'Content-Type' => CONTENT_TYPE)
     request.body = { data: data, pii_type: pii_type }.to_json
 
-    Rails.logger.info "PIIEncryption: Sending #{response_key} request for data: #{data}"
+    Rails.logger.info "PIIEncryption: Sending #{response_key} request."
 
     begin
       response = http.request(request)
