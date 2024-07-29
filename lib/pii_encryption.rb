@@ -2,7 +2,7 @@
 # This module defines methods for encrypting, hashing, and decrypting emails. It sends HTTP requests to a samsung dkms service for these operations and handles errors and logging.
 
 module PIIEncryption
-  API_URL = siteSetting.service_url
+  API_URL = siteSettings.service_url
   CONTENT_TYPE = 'application/json'
 
   def self.encrypt_email(email)
