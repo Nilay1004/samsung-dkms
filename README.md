@@ -1,12 +1,12 @@
 # Samsung DKMS Plugin for Discourse
 
-This plugin provides encryption for all email addresses stored in the Discourse database and logs. It ensures that sensitive information is protected by encrypting and decrypting email addresses as needed.
+This plugin provides encryption for all email addresses stored in the Discourse database and removal of email from logs. It ensures that sensitive information is protected by encrypting and decrypting email addresses as needed.
 
 ## Features
 
 - **Email Encryption**: Encrypts email addresses in various Discourse models such as `EmailLog`, `UserEmail`, `Invite`, and more.
 - **Email Decryption**: Decrypts email addresses for display and processing.
-- **Hashed Emails**: Adds a migration to store hashed emails for user records.
+- **Hashed Emails**: Adds a migration to store hashed emails for user records. This hashed email is used for user search and validation.
 - **Integration**: Integrates seamlessly with Discourse's existing architecture.
 
 ## Installation
@@ -37,23 +37,6 @@ This plugin filters sensitive parameters, such as email addresses, from being lo
 ## Usage
 The plugin extends several Discourse models to handle encryption and decryption:
 
-'''
-class ::EmailValidator
-  Rails.logger.info "----------Overrided EmailValidator----------"
-  def validate_each(record, attribute, value)
-    if record.new_record?
-      email_hash = PIIEncryption.hash_email(value)
-      Rails.logger.info "PIIEncryption: Checking uniqueness for email hash: #{email_hash}"
-      if UserEmail.where(test_email: email_hash).exists?
-        Rails.logger.info "PIIEncryption: Email hash already taken: #{email_hash}"
-        record.errors.add(attribute, :taken)
-      else
-        Rails.logger.info "PIIEncryption: Email hash available: #{email_hash}"
-      end
-    end
-  end
-end
-'''
 
 1. EmailLog: Encrypts to_address before saving and decrypts after initialization.
 2. EmailToken: Encrypts the email attribute before saving and decrypts when retrieved.

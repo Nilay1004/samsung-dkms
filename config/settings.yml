@@ -3,5 +3,7 @@ samsung_dkms:
     default: true
     client: false
 
-  service_url: "http://35.174.88.137:8080"
+  service_url: 
+    default: "http://35.174.88.137:8080"
+    client: false
   
