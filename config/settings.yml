@@ -3,6 +3,6 @@ samsung_dkms:
     default: true
 
   service_url: 
-    default: "http://35.174.88.137:8080"
+    default: "http://dkmsstg.galaxy.store"
     type: string
   
