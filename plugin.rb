@@ -5,7 +5,7 @@
 # meta_topic_id: 001
 # version: 0.0.1
 # authors: Pankaj
-# url: https://github.com/Nilay1004/discourse-plugin-test-basic
+# url: https://github.com/Nilay1004/samsung-dkms/blob/main/README.md
 # required_version: 2.7.0
 
 enabled_site_setting :samsung_dkms_plugin_enabled
